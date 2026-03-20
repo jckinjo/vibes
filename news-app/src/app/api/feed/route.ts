@@ -1,5 +1,5 @@
 // Dev-only RSS proxy — bypasses CORS for browser testing.
-// Not included in the Android build (output: 'export' excludes API routes).
+// This route is automatically excluded when building with output: 'export'
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {

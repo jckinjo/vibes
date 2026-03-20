@@ -1,19 +1,22 @@
 # Concert Tracker
 
-ギタリスト系アーティストのライブ情報を一覧表示するWebアプリ。
+Live concert schedule aggregator for acoustic guitarists
 
-## 対応サイト
+## Supported Artists
 
-| アーティスト   | URL                                         |
-| -------------- | ------------------------------------------- |
-| GOGO SATOSHI   | https://www.gogosatoshi.com/shows           |
-| DEPAPEPE       | https://rainbow-e.co.jp/depapepe/live/      |
-| 押尾コータロー | https://www.kotaro-oshio.com/schedule/live/ |
-| 井草聖二       | https://www.igusaseiji.com                  |
-| 丸山達也       | https://tatsuyamaruyama.com/live            |
+- GOGO SATOSHI
+- DEPAPEPE
+- Kotaro Oshio (押尾コータロー)
+- Seiji Igusa (井草聖二)
+- Tatsuya Maruyama (丸山達也)
 
-## 起動方法
+## Getting Started
 
 ```bash
+npm install
 npm run dev
 ```
+
+Open http://localhost:3456
+
+API: `GET /api/concerts` (use `?refresh=1` to force refresh)

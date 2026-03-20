@@ -7,7 +7,7 @@ import type { Language, Category } from "@/lib/sources";
 import { LANGUAGE_LABELS, LANGUAGE_CATEGORIES, CATEGORY_LABELS, SOURCES } from "@/lib/sources";
 import NewsCard from "./NewsCard";
 
-const LANGUAGES: Language[] = ["ja", "en", "zh", "ko"];
+const LANGUAGES: Language[] = ["en", "ja", "zh", "ko"];
 
 interface FeedData {
   items: NewsItem[];
@@ -15,12 +15,13 @@ interface FeedData {
 }
 
 export default function NewsFeed() {
-  const [activeLanguage, setActiveLanguage] = useState<Language>("ja");
+  const [activeLanguage, setActiveLanguage] = useState<Language>("en");
   const [activeCategory, setActiveCategory] = useState<Category | "all">("all");
   const [activeSource, setActiveSource] = useState<string>("all");
   const [feeds, setFeeds] = useState<Partial<Record<Language, FeedData>>>({});
   const [loading, setLoading] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const fetchLanguage = useCallback(async (lang: Language) => {
     setLoading(true);
@@ -49,6 +50,19 @@ export default function NewsFeed() {
     setActiveSource("all");
   }, [activeLanguage]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // handle scroll to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const currentItems = feeds[activeLanguage]?.items ?? [];
   const categories = LANGUAGE_CATEGORIES[activeLanguage];
   const langSources = SOURCES.filter((s) => s.language === activeLanguage);
@@ -60,89 +74,99 @@ export default function NewsFeed() {
   });
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Language Tabs */}
-      <div className="flex border-b border-gray-200 dark:border-gray-700 mb-4">
-        {LANGUAGES.map((lang) => (
-          <button
-            key={lang}
-            onClick={() => setActiveLanguage(lang)}
-            className={`px-5 py-3 text-sm font-semibold transition-colors relative ${
-              activeLanguage === lang
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-            }`}
-          >
-            {LANGUAGE_LABELS[lang]}
-            </button>
-        ))}
-        <div className="flex-1" />
-        <button
-          onClick={() => fetchLanguage(activeLanguage)}
-          disabled={loading}
-          className="px-3 py-2 text-xs text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 disabled:opacity-40 transition-colors flex items-center gap-1"
-        >
-          <svg
-            className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-          {loading ? "Loading..." : lastRefresh ? `Updated ${lastRefresh.toLocaleTimeString()}` : "Refresh"}
-        </button>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {/* Category filter */}
-        <div className="flex flex-wrap gap-1">
-          <button
-            onClick={() => setActiveCategory("all")}
-            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-              activeCategory === "all"
-                ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100"
-                : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-500"
-            }`}
-          >
-            All
-          </button>
-          {categories.map((cat) => (
+    <>
+      <div className="flex flex-col h-full">
+        {/* Language Filters - Row 1 */}
+        <div className="flex items-center gap-2 mb-2">
+          {LANGUAGES.map((lang) => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              key={lang}
+              onClick={() => setActiveLanguage(lang)}
               className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-                activeCategory === cat
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-400"
+                activeLanguage === lang
+                  ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100"
+                  : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-500"
               }`}
             >
-              {CATEGORY_LABELS[cat]}
+              {LANGUAGE_LABELS[lang]}
             </button>
           ))}
+
+          {/* Refresh button */}
+          <button
+            onClick={() => fetchLanguage(activeLanguage)}
+            disabled={loading}
+            className="ml-auto p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 disabled:opacity-40 transition-colors flex-shrink-0"
+            title="Refresh"
+          >
+            <svg
+              className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          </button>
         </div>
 
-        {/* Source filter */}
-        <div className="flex flex-wrap gap-1 ml-auto">
-          <select
-            value={activeSource}
-            onChange={(e) => setActiveSource(e.target.value)}
-            className="text-xs border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      {/* Category Filters - Row 2 */}
+      <div className="flex flex-wrap gap-2 mb-2">
+        <button
+          onClick={() => setActiveCategory("all")}
+          className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+            activeCategory === "all"
+              ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100"
+              : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-500"
+          }`}
+        >
+          All
+        </button>
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+              activeCategory === cat
+                ? "bg-blue-600 text-white border-blue-600"
+                : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-400"
+            }`}
           >
-            <option value="all">All sources</option>
-            {langSources.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            {CATEGORY_LABELS[activeLanguage][cat]}
+          </button>
+        ))}
+      </div>
+
+      {/* Source Filters - Row 3 */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button
+          onClick={() => setActiveSource("all")}
+          className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+            activeSource === "all"
+              ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100"
+              : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-500"
+          }`}
+        >
+          All
+        </button>
+        {langSources.map((source) => (
+          <button
+            key={source.id}
+            onClick={() => setActiveSource(source.id)}
+            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+              activeSource === source.id
+                ? "bg-blue-600 text-white border-blue-600"
+                : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-blue-400"
+            }`}
+          >
+            {source.name}
+          </button>
+        ))}
       </div>
 
       {/* Count */}
@@ -184,5 +208,29 @@ export default function NewsFeed() {
         </div>
       )}
     </div>
+
+      {/* Scroll to top button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all z-50"
+          title="Scroll to top"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      )}
+    </>
   );
 }

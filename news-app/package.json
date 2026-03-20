@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:android": "BUILD_FOR_ANDROID=true next build && npx cap sync",
+    "build:android": "mv src/app/api /tmp/api.backup.$$ 2>/dev/null || true && BUILD_FOR_ANDROID=true next build && npx cap sync && mv /tmp/api.backup.$$ src/app/api 2>/dev/null || true",
     "start": "next start",
     "lint": "eslint"
   },

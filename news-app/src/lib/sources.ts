@@ -32,10 +32,16 @@ const JA_EXCLUDE_KEYWORDS = [
   "米ツアー", "欧州ツアー", "ワールドカップ", "W杯",
   // sports — result words
   "本塁打", "三振", "得点", "失点", "スタート",
+  // board games / esports
+  "将棋", "囲碁", "麻雀", "eスポーツ",
+  "藤井聡太", "王将戦", "竜王戦", "名人戦", "棋聖戦", "王位戦", "王座戦", "棋王戦",
   // entertainment
   "映画", "ドラマ", "俳優", "女優", "タレント", "芸能",
   "アイドル", "コンサート", "紅白", "授賞式",
   "歌手", "アニメ映画", "興行収入",
+  // lifestyle / trending topics (non-news)
+  "タイパ", "コスパ", "ライフハック", "バズる", "インフルエンサー",
+  "グルメ", "レシピ", "ダイエット", "美容", "ファッション",
 ];
 
 const KO_EXCLUDE_KEYWORDS = [
@@ -340,13 +346,39 @@ export const LANGUAGE_LABELS: Record<Language, string> = {
   ko: "한국어",
 };
 
-export const CATEGORY_LABELS: Record<Category, string> = {
-  politics: "政治 / Politics",
-  economy: "経済 / Economy",
-  society: "社会 / Society",
-  international: "国際 / International",
-  tech: "SWE / Infra",
-  taiwan: "台灣",
+export const CATEGORY_LABELS: Record<Language, Record<Category, string>> = {
+  en: {
+    politics: "Politics",
+    economy: "Economy",
+    society: "Society",
+    international: "International",
+    tech: "Tech",
+    taiwan: "Taiwan",
+  },
+  ja: {
+    politics: "政治",
+    economy: "経済",
+    society: "社会",
+    international: "国際",
+    tech: "テック",
+    taiwan: "台湾",
+  },
+  zh: {
+    politics: "政治",
+    economy: "經濟",
+    society: "社會",
+    international: "國際",
+    tech: "科技",
+    taiwan: "台灣",
+  },
+  ko: {
+    politics: "정치",
+    economy: "경제",
+    society: "사회",
+    international: "국제",
+    tech: "기술",
+    taiwan: "대만",
+  },
 };
 
 export const LANGUAGE_CATEGORIES: Record<Language, Category[]> = {

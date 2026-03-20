@@ -1,11 +1,26 @@
-### Dev
+# News App
+
+RSS feed aggregator and news dashboard
+
+## Getting Started
+
+### Web Development Mode
 
 ```bash
+npm install
 npm run dev
 ```
 
-Android
+Open http://localhost:3000
 
+### Android Build
+
+```bash
+npm run build:android
 ```
-npm run build && npx cap sync
+
+Then open with Android Studio:
+
+```bash
+npx cap open android
 ```

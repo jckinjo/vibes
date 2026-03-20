@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "News Dashboard — 日本語 · English · 中文",
   description: "Multilingual news aggregator: JP/EN/ZH with independent sources",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
